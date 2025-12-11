@@ -54,7 +54,7 @@
         <div id="dynamicContentArea" class="p-3 border rounded bg-light d-none">
             </div>
 
-        <div class="row mt-3 fw-bold">
+        <div class="row mt-3">
             <div class="col-md-6">
                 <label>Şehir</label>
                 <select asp-for="CityId" class="form-select" id="citySelect">
@@ -72,7 +72,7 @@
                 </select>
                 <span asp-validation-for="CityId" class="text-danger"></span>
             </div>
-            <div class="col-md-6 fw-bold">
+            <div class="col-md-6">
                 <label>İlçe</label>
                 <select asp-for="DistrictId" class="form-select" id="districtSelect" disabled>
                     <option value="">Önce Şehir Seçiniz...</option>
