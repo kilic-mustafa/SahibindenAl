@@ -1,0 +1,71 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+
+/* 1. Tüm Sekme Listesinin Altındaki Kalın Sarı Çizgi */
+.sahibinden-tabs {
+    border-bottom: 4px solid #ffc107 !important; /* O meşhur sarı çizgi */
+    padding-left: 0; /* Sol hizalama */
+}
+
+/* Pasif (Tıklanmamış) Sekmeler */
+.sahibinden-tabs .nav-link {
+    background-color: #f8f9fa; /* Açık gri */
+    color: #0d6efd; /* Mavi yazı */
+    border: 1px solid #dee2e6;
+    margin-right: 4px; /* Sekmeler arası boşluk */
+}
+
+/* Aktif (Tıklanmış) Sekme */
+.sahibinden-tabs .nav-link.active {
+    background-color: #ffc107 !important; /* SARI RENK */
+    color: #000 !important; /* Siyah yazı */
+    border-color: #ffc107 !important;
+    border-bottom-color: transparent !important; /* Alt çizgiyi kaldır ki kartla birleşsin */
+}
+
+/* Hover (Üzerine gelince) */
+.sahibinden-tabs .nav-link:hover {
+    border-color: #e9ecef;
+}
+
+
+/* Responsive iptali */
+body {
+    min-width: 1200px;
+    overflow-x: auto;
+}
+.container {
+    min-width: 1140px !important;
+    width: 1140px !important;
+    max-width: none !important;
+}

@@ -1,0 +1,74 @@
+@model List<CategoryPropertyKey>
+
+@if (Model != null && Model.Count > 0)
+{
+    <h5 class="mt-4 mb-3 text-primary">Detaylı Özellikler</h5>
+    <div class="row">
+        @foreach (var prop in Model)
+        {
+            <div class="col-md-6 mb-3" id="prop-container-@prop.Id">
+                <label class="form-label fw-bold">@prop.Name</label>
+
+                @if (prop.DataType == "Number")
+                {
+                    <input type="number" name="dynamicProps[@prop.Id]" class="form-control" placeholder="@prop.Name giriniz" />
+                }
+                else if (prop.DataType == "Select" && prop.CategoryPropertyOptions != null)
+                {
+                    <select name="dynamicProps[@prop.Id]" class="form-select">
+                        <option value="">Seçiniz</option>
+                        @foreach (var option in prop.CategoryPropertyOptions)
+                        {
+                            <option value="@option.Value" data-option-id="@option.Id">@option.Value</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <input type="text" name="dynamicProps[@prop.Id]" class="form-control" />
+                }
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info mt-3">
+        <i class="fa fa-info-circle"></i> Bu kategori için özel özellikler tanımlanmamıştır.
+    </div>
+}
+
+<script>
+$(document).ready(function() {
+    $('[data-parent-id]').on('change', function() {
+        var parentId = $(this).data('parent-id');
+        var selectedOptionId = $(this).find('option:selected').data('option-id');
+        
+        var childSelect = $(`[data-child-for="${parentId}"]`);
+
+        childSelect.empty().append('<option value="">Seçiniz</option>').prop('disabled', true);
+
+        if (selectedOptionId) {
+            $.ajax({
+                url: '@Url.Action("GetChildOptions", "Advert")',
+                type: 'GET',
+                data: { parentOptionId: selectedOptionId },
+                success: function(options) {
+                    if (options && options.length > 0) {
+                        childSelect.prop('disabled', false);
+                        $.each(options, function(i, option) {
+                            childSelect.append($('<option>', {
+                                value: option.value, 
+                                text: option.value
+                            }).attr('data-option-id', option.id));
+                        });
+                    }
+                },
+                error: function() {
+                    console.error('Alt seçenekler yüklenirken bir hata oluştu.');
+                }
+            });
+        }
+    });
+});
+</script>

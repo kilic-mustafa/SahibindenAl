@@ -1,0 +1,262 @@
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model List<SahibindenAl.Models.Advert>
+
+@{
+
+    ViewData["Title"] = "SahibindenAl.com - Türkiyenin Online İkinci El Alışveriş Sitesi";
+    var filter = ViewBag.CurrentFilter as SahibindenAl.DTOs.AdvertFilterDto;
+
+    string searchTitle = "Tüm İlanlar"; 
+    
+    if (!string.IsNullOrEmpty(filter?.SearchText))
+    {
+        searchTitle = filter.SearchText; 
+    }
+    else if (filter?.CategoryId.HasValue == true && ViewBag.Categories != null)
+    {
+        var categories = ViewBag.Categories as List<SahibindenAl.Models.Category>;
+        var selectedCategory = categories?.FirstOrDefault(c => c.Id == filter?.CategoryId!.Value);
+        
+        if (selectedCategory != null)
+        {
+            searchTitle = selectedCategory.Name!; 
+        }
+    }
+
+}
+
+<div class="container mt-4">
+    <div class="row">
+        
+
+        <div class="col-md-3">
+            <form asp-action="Index" method="get">
+                
+                <div class="card mb-3"> <div class="card-header fw-bold">Kategori</div>
+                    <div class="card-body">
+                        <select name="CategoryId" class="form-select">
+                            <option value="">Tüm</option>
+                            @if (ViewBag.Categories != null)
+                            {
+                                foreach (var cat in ViewBag.Categories as List<SahibindenAl.Models.Category> ?? new List<SahibindenAl.Models.Category>())
+                                {
+                                    if (cat != null)
+                                    {
+                                        if(filter?.CategoryId == cat.Id) 
+                                        { 
+                                            <option value="@cat.Id" selected>@cat.Name</option> 
+                                        }
+                                        else 
+                                        {
+                                            <option value="@cat.Id">@cat.Name</option>
+                                        }
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                        Adres
+                        <small class="text-primary" style="cursor:pointer; font-weight:normal;">Türkiye</small> </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <select name="CityId" id="citySelect" class="form-select">
+                                <option value="">İl</option>
+                                @if (ViewBag.Cities != null)
+                                {
+                                    foreach (var city in ViewBag.Cities as List<SahibindenAl.Models.City> ?? new List<SahibindenAl.Models.City>())
+                                    {
+                                        if (city != null)
+                                        {
+                                            if(filter?.CityId == city.Id) 
+                                            { 
+                                                <option value="@city.Id" selected>@city.Name</option> 
+                                            }
+                                            else 
+                                            {
+                                                <option value="@city.Id">@city.Name</option>
+                                            }
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-0">
+                            <select name="DistrictId" id="districtSelect" class="form-select" @(ViewBag.CityId == null && filter?.CityId == null ? "disabled" : "")>
+                                <option value="">İlçe</option>
+                                @if (ViewBag.Districts != null)
+                                {
+                                    foreach (var district in ViewBag.Districts as List<SahibindenAl.Models.District> ?? new List<SahibindenAl.Models.District>())
+                                    {
+                                        if (district != null)
+                                        {
+                                            if(filter?.DistrictId == district.Id) 
+                                            { 
+                                                <option value="@district.Id" selected>@district.Name</option> 
+                                            }
+                                            else 
+                                            {
+                                                <option value="@district.Id">@district.Name</option>
+                                            }
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">Fiyat</div>
+                    <div class="card-body">
+
+
+                        <div class="d-flex gap-2">
+                            <input type="number" name="MinPrice" value="@filter?.MinPrice" class="form-control" placeholder="min TL" />
+                            <input type="number" name="MaxPrice" value="@filter?.MaxPrice" class="form-control" placeholder="max TL" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow border-0 bg-white mb-3" style="z-index: 10;">
+                    <div class="card-body p-3">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold btn-lg">Ara</button>
+                        
+                        <div class="text-center mt-2"> 
+                            <a href="/" class="text-decoration-none text-muted small underlined;">Filtreleri Temizle</a>
+                        </div>
+                    </div>
+                </div>
+
+            </form> 
+        </div>
+
+
+        <div class="col-md-9">
+            
+            <div class="border p-2 mb-3 d-flex justify-content-between align-items-center bg-white">
+                
+                <div class="text-dark">
+                    "<strong>@(ViewBag.CurrentFilter?.SearchText ?? @searchTitle)</strong>" 
+                    aramanızda 
+                    
+                    <span class="text-danger fw-bold fs-6">
+                        @Model.Count ilan
+                    </span> 
+                    
+                    bulundu.
+                </div>
+
+                <a href="#" class="text-decoration-none" style="color: #003399; font-size: 0.9rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star me-1" viewBox="0 0 16 16" style="position: relative; top: -2px;">
+                        <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                    </svg>
+                    Aramayı Kaydet
+                </a>
+
+            </div>
+
+            
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div style="height: 240px; background-color: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                    @{
+                                        var imageUrl = "";
+                                        if (item.AdvertImages != null && item.AdvertImages.Any())
+                                        {
+                                            var coverImage = item.AdvertImages.FirstOrDefault(i => i.IsCoverImage);
+                                            if (coverImage != null)
+                                            {
+                                                imageUrl = coverImage.ImageUrl;
+                                            }
+                                            else
+                                            {
+                                                imageUrl = item.AdvertImages.First().ImageUrl;
+                                            }
+                                        }
+                                    }
+                                    @if (!string.IsNullOrEmpty(imageUrl))
+                                    {
+                                        <img src="@imageUrl" class="card-img-top" alt="@item.Title" style="object-fit: cover; height: 100%; width: 100%;">
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Resim Yok</span>
+                                    }
+                            </div>
+                            
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate" title="@item.Title">
+                                    <a href="/Advert/Details/@item.Id" class="text-decoration-none text-dark">@item.Title</a>
+                                </h5>
+                                <p class="card-text fw-bold text-danger mb-1">@item.Price.ToString("N0") ₺</p>
+                                <p class="card-text text-muted small">
+                                    <i class="fa fa-map-marker"></i> @item.City?.Name / @item.District?.Name
+                                </p>
+                            </div>
+                            <div class="card-footer bg-white border-top-0">
+                                <a href="/Advert/Details/@item.Id" class="btn btn-sm btn-outline-primary w-100">İncele</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            if ($('#citySelect').val() === "") {
+                 $('#districtSelect').prop('disabled', true);
+            }
+
+            $('#citySelect').change(function () {
+                var cityId = $(this).val();
+                var districtSelect = $('#districtSelect');
+
+                districtSelect.empty();
+
+                if (cityId) {
+                    
+                    districtSelect.prop('disabled', false);
+                    districtSelect.append('<option value="">Yükleniyor...</option>');
+
+                    url: 
+                    $.ajax({
+                        url: '/Home/GetDistricts',
+                        type: 'GET',
+                        data: { cityId: cityId },
+                        success: function (data) {
+                            districtSelect.empty();
+                            districtSelect.append('<option value="">İlçe</option>');
+
+                            $.each(data, function (index, district) {
+                                districtSelect.append('<option value="' + district.id + '">' + district.name + '</option>');
+                            });
+                        },
+                        error: function () {
+                            alert('İlçeler yüklenirken hata oluştu.');
+                            districtSelect.empty();
+                            districtSelect.append('<option value="">İlçe</option>');
+                        }
+                    });
+                } else {
+                    districtSelect.empty();
+                    districtSelect.append('<option value="">İlçe</option>');
+                    districtSelect.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+}

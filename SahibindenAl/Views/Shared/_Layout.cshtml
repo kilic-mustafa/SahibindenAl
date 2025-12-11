@@ -1,0 +1,144 @@
+﻿@using SahibindenAl.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
+
+@{
+
+    var filter = ViewBag.CurrentFilter as SahibindenAl.DTOs.AdvertFilterDto;
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1200, initial-scale=1, shrink-to-fit=no" />    
+    <title>@ViewData["Title"]</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SahibindenAl.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand navbar-toggleable-sm border-bottom box-shadow mb-3" style="background-color: #363F54;">
+        <div class="container">
+            
+            <a class="navbar-brand d-flex align-items-center justify-content-center" asp-area="" asp-controller="Home" asp-action="Index" 
+               style="background-color: #FFE800; color: black; font-weight: bold; font-family: Arial, sans-serif; font-size: 20px; padding: 0px 10px; height: 36px; text-decoration: none; margin-left: 13px;">
+                sahibindenal.com
+            </a>
+
+            <button class="navbar-toggler toggler-shift" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="navbar-collapse collapse d-inline-flex justify-content-between">      
+
+                <div class="d-flex align-items-center flex-grow-1 ms-0 me-3">
+                    
+                    <form class="d-flex" style="flex-grow: 1; max-width: 280px;"> <div class="input-group">
+                            <input class="form-control border-0 shadow-none" type="text" name="SearchText" 
+                                   value="@filter?.SearchText" placeholder="Kelime, ilan no veya mağaza adı ile ara" 
+                                   aria-label="Search" style="background-color: #485265; color: white; font-size: 12px; height: 36px;">
+                            <button class="btn border-0" type="submit" style="background-color: #485265; color: #aeb4c1;">
+                                <i class="bi bi-search">🔍︎</i> 
+                            </button>
+                        </div>
+                    </form>
+
+                    <a class="nav-link text-white text-nowrap ms-3" href="#" style="font-size: 13px;">
+                        Detaylı Arama
+                    </a>
+                </div>
+
+                <ul class="navbar-nav align-items-center ms-auto">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        var currentUser = await UserManager.GetUserAsync(User);
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white fw-bold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 12px;">
+                                @($"{currentUser!.FirstName} {currentUser.LastName!.First()}.".ToUpper())
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" style="min-width: 220px;">
+
+                                <li><span class="dropdown-header text-secondary fw-bold fw-bold fs-6 ps-3">@($"{currentUser!.FirstName} {currentUser!.LastName}".ToUpper())</span></li>
+                                <li><hr class="dropdown-divider"></li>
+
+                                <li><a class="dropdown-item text-black" href="#">Hesabım</a></li>
+                                <li><hr class="dropdown-divider"></li>
+
+                                <li><a class="dropdown-item text-black" href="#">İlanlarım</a></li>
+                                <li><hr class="dropdown-divider"></li>
+
+                                <li><a class="dropdown-item text-black" href="#">Favorilerim</a></li>
+                                <li><hr class="dropdown-divider"></li>
+
+                                <li>
+                                    <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+                                        <button type="submit" class="dropdown-item">➜] Çıkış Yap</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item d-flex align-items-center ms-2">
+                            <a class="nav-link text-white px-1" title="Mesajlar" style="font-size: 16px;">✉️</a>
+                            <a class="nav-link text-warning px-1" title="Bildirimler" style="font-size: 16px;">🔊</a>
+                            <a class="nav-link text-white px-1" title="Favoriler" style="font-size: 16px;">★</a>
+                        </li>
+
+                        <li class="nav-item ms-3">
+                            <a class="nav-link text-white text-center d-flex align-items-center justify-content-center" 
+                               style="background-color: #448DF9; width: 130px; height: 36px; font-size: 13px; font-weight: 500;"
+                               asp-area="" asp-controller="Advert" asp-action="Create"> 
+                               Ücretsiz İlan Ver
+                            </a>
+                        </li>
+
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white" style="font-size: 13px;" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+                        </li>
+                        <li class="nav-item border-start border-secondary ms-2 ps-2">
+                            <a class="nav-link text-white" style="font-size: 13px;" asp-controller="Account" asp-action="Register">Hesap Aç</a>
+                        </li>
+                         <li class="nav-item ms-3">
+                            <a class="nav-link text-white text-center d-flex align-items-center justify-content-center" 
+                               style="background-color: #448DF9; width: 130; height: 36px; font-size: 13px; font-weight: 500;"
+                               asp-controller="Advert" asp-action="Create">
+                               Ücretsiz İlan Ver
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            Copyright &copy; 2025 SahibindenAl.com
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

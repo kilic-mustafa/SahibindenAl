@@ -1,0 +1,158 @@
+@using SahibindenAl.DTOs
+@model AdvertCreateDto
+
+@{
+    ViewData["Title"] = "İlan Ver";
+}
+
+<div class="container mt-5">
+
+    <h3>Yeni İlan</h3>
+    <hr />
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">İlan Başlığı</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Fiyat (TL)</label>
+                <input asp-for="Price" type="number" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Açıklama</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Kategori Seçin</label>
+            <select asp-for="CategoryId" class="form-select" id="categorySelect">
+                <option value="">Kategori Seçiniz...</option>
+                @if (ViewBag.Categories != null)
+                {
+                    foreach (var cat in ViewBag.Categories as List<Category> ?? new List<Category>())
+                    {
+                        if (cat != null)
+                        {
+                            <option value="@cat.Id">@cat.Name</option>
+                        }
+                    }
+                }
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div id="dynamicContentArea" class="p-3 border rounded bg-light d-none">
+            </div>
+
+        <div class="row mt-3 fw-bold">
+            <div class="col-md-6">
+                <label>Şehir</label>
+                <select asp-for="CityId" class="form-select" id="citySelect">
+                    <option value="">Şehir Seçiniz...</option>
+                    @if (ViewBag.Cities != null)
+                    {
+                        foreach (var city in ViewBag.Cities as List<SahibindenAl.Models.City> ?? new List<SahibindenAl.Models.City>())
+                        {
+                            if (city != null)
+                            {
+                                <option value="@city.Id">@city.Name</option>
+                            }
+                        }
+                    }
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 fw-bold">
+                <label>İlçe</label>
+                <select asp-for="DistrictId" class="form-select" id="districtSelect" disabled>
+                    <option value="">Önce Şehir Seçiniz...</option>
+                </select>
+                <span asp-validation-for="DistrictId" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="mb-3">
+            <label class="form-label fw-bold">Fotoğraf Ekle</label>
+            <input asp-for="Photos" class="form-control" multiple accept="image/*" />
+            <div class="form-text">Birden fazla resim seçebilirsiniz (Ctrl tuşuna basılı tutarak).</div>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-4 btn-lg w-100">İlanı Yayınla</button>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    
+    <script>
+        $(document).ready(function () {
+            
+            // Şehir seçimi değiştiğinde ilçeleri getir
+            $('#citySelect').on('change', function () {
+                var cityId = $(this).val();
+                var districtSelect = $('#districtSelect');
+                
+                districtSelect.empty().append('<option value="">Yükleniyor...</option>');
+
+                if (cityId) {
+                    districtSelect.prop('disabled', false);
+                    $.ajax({
+                        url: '@Url.Action("GetDistrictsByCity", "Advert")',
+                        type: 'GET',
+                        data: { cityId: cityId },
+                        success: function (districts) {
+                            districtSelect.empty().append('<option value="">İlçe Seçiniz...</option>');
+                            $.each(districts, function (i, district) {
+                                districtSelect.append($('<option>', {
+                                    value: district.id,
+                                    text: district.name
+                                }));
+                            });
+                        },
+                        error: function () {
+                            districtSelect.empty().append('<option value="">İlçeler yüklenemedi.</option>').prop('disabled', true);
+                        }
+                    });
+                } else {
+                    districtSelect.empty().append('<option value="">Önce Şehir Seçiniz...</option>').prop('disabled', true);
+                }
+            });
+            
+            $('#categorySelect').change(function () {
+                var selectedCatId = $(this).val();
+                var contentArea = $('#dynamicContentArea');
+
+                if (selectedCatId) {
+                    contentArea.removeClass('d-none').html('<p class="text-center">Özellikler yükleniyor...</p>');
+
+                    $.ajax({
+                        url: '@Url.Action("GetCategoryProperties", "Advert")',
+                        type: 'GET',
+                        data: { categoryId: selectedCatId },
+                        success: function (response) {
+                            contentArea.html(response);
+                        },
+                        error: function () {
+                            contentArea.html('<p class="text-danger">Özellikler yüklenemedi.</p>');
+                        }
+                    });
+                } else {
+                    contentArea.addClass('d-none').empty();
+                }
+            });
+
+        });
+    </script>
+}

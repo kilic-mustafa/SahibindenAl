@@ -1,0 +1,23 @@
+# --- 1. Build Results (Generated binaries) ---
+[Bb]in/
+[Oo]bj/
+
+# --- 2. Visual Studio & VS Code User Settings ---
+.vscode/
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# --- 3. OS Generated Files ---
+.DS_Store
+Thumbs.db
+
+# --- 4. Security (Ignored secrets) ---
+appsettings.Development.json
+
+# --- User Data
+**/wwwroot/uploads/
+
+# --- External Libraries
+**/wwwroot/lib/
