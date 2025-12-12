@@ -201,13 +201,42 @@
                         <div class="card-body p-0">
                             <table class="table table-striped table-hover mb-0">
                                 <tbody>
-                                    @if (Model.AdvertPropertyValues != null && Model.AdvertPropertyValues.Any())
+                                @{  
+                                    var filledFields = Model.AdvertPropertyValues?
+                                                        .Where(p => !string.IsNullOrWhiteSpace(p.Value))
+                                                        .ToList();
+                                }
+                                    @if (filledFields != null && filledFields.Any())
                                     {
-                                        foreach (var prop in Model.AdvertPropertyValues)
+                                        foreach (var prop in filledFields)
                                         {
                                             <tr>
+                                                @if (@prop.PropertyKey?.Name == "Kimden") 
+                                                    if(prop.Value == "Sahibinden")
+                                                    {
+                                                        <td class="fw-bold ps-3" style="width: 40%;">@prop.PropertyKey?.Name</td>
+                                                        <td class="text-danger">@prop.Value</td>
+                                                    }
+                                                    else{
+                                                        <td class="fw-bold ps-3" style="width: 40%;">@prop.PropertyKey?.Name</td>
+                                                        <td class>@prop.Value</td>
+                                                    }
+                                                else if (@prop.PropertyKey?.Name == "Motor Gücü (hp)") {
+                                                    <td class="fw-bold ps-3" style="width: 40%;">@prop.PropertyKey?.Name</td>
+                                                    <td>@prop.Value hp</td>
+                                                }
+                                                else if (@prop.PropertyKey?.Name == "Motor Hacmi (cc)") {
+                                                    <td class="fw-bold ps-3" style="width: 40%;">@prop.PropertyKey?.Name</td>
+                                                    <td>@prop.Value cc</td>
+                                                }
+                                                else if (@prop.PropertyKey?.Name == "KM") {
+                                                    <td class="fw-bold ps-3" style="width: 40%;">@prop.PropertyKey?.Name</td>
+                                                    <td>@(int.Parse(prop.Value!).ToString("N0", new System.Globalization.CultureInfo("tr-TR")))</td>
+                                                }
+                                                else{
                                                 <td class="fw-bold ps-3" style="width: 40%;">@prop.PropertyKey?.Name</td>
                                                 <td>@prop.Value</td>
+                                                }
                                             </tr>
                                         }
                                     }
