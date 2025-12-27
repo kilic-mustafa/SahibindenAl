@@ -2,7 +2,7 @@
 
 SahibindenAl is a web application that models the core functionalities of the popular second-hand classifieds platform, Sahibinden.com. It allows users to post listings in various categories (e.g., real estate, vehicles), search for listings with filters, and view their details. The project was developed using modern .NET technologies following the MVC (Model-View-Controller) architecture.
 
-## ✨ Features
+## Features
 
 - **User Management:** Registration and login functionalities.
 - **Ad Creation:** Allows users to post listings in different categories with dynamic properties (e.g., "Model Year," "Mileage" for a car).
@@ -12,7 +12,7 @@ SahibindenAl is a web application that models the core functionalities of the po
 - **Database Management:** Code-first database management and migrations with Entity Framework Core.
 - **Repository Pattern:** Abstraction of the data access layer to increase manageability.
 
-## 🚀 Technology Stack
+## Technology Stack
 
 - **Backend:** C#, ASP.NET Core MVC (.NET 9)
 - **Database:** PostgreSQL
@@ -23,7 +23,7 @@ SahibindenAl is a web application that models the core functionalities of the po
   - `Npgsql.EntityFrameworkCore.PostgreSQL`: PostgreSQL database provider.
   - Library Manager (LibMan): For client-side library management.
 
-## 📂 Project Structure
+## Project Structure
 
 The main directories and files of the project are explained below:
 
@@ -46,7 +46,7 @@ SahibindenAl/
 └── Program.cs          # The application's entry point and service configuration.
 ```
 
-## 🛠️ Installation
+## Installation
 
 Follow the steps below to run the project on your local machine:
 
@@ -89,7 +89,7 @@ Follow the steps below to run the project on your local machine:
     dotnet ef database update
     ```
 
-## 🏃‍♀️ Usage
+## Usage
 
 To start the project, run the following command in the `SahibindenAl` folder:
 
@@ -102,7 +102,16 @@ The application will start running on `https://localhost:7209` and `http://local
 - **Post a New Ad:** Create an account using the "Login" or "Register" links in the top right corner. After logging in, you can create your new ad with the "Post Ad" button.
 - **Search for Ads:** You can search among existing ads using the filtering options (category, city, district, etc.) on the homepage.
 
-## 🤝 Contributing
+## Screenshots
+
+<img width="1919" height="1020" alt="Ekran görüntüsü 2025-12-27 094634" src="https://github.com/user-attachments/assets/8ed9ea81-6853-478d-a84c-b3f8c4b3396a" />
+<br /><br />
+<img width="1919" height="1019" alt="Ekran görüntüsü 2025-12-27 095814" src="https://github.com/user-attachments/assets/c8476842-5b13-420c-b35e-55b077aaf24b" />
+<br /><br />
+<img width="1919" height="1020" alt="Ekran görüntüsü 2025-12-27 094736" src="https://github.com/user-attachments/assets/8016fd3d-b721-4a5e-8dc7-b3b9d9dcb3b9" />
+
+
+## Contributing
 
 Your contributions will make the project better! If you want to contribute:
 
@@ -112,6 +121,6 @@ Your contributions will make the project better! If you want to contribute:
 4.  Push your branch to the main repository (`git push origin feature/new-feature`).
 5.  Open a Pull Request (PR).
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
