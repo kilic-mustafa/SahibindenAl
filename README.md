@@ -106,6 +106,8 @@ The application will start running on `https://localhost:7209` and `http://local
 
 <img width="1919" height="1020" alt="Ekran görüntüsü 2025-12-27 094634" src="https://github.com/user-attachments/assets/8ed9ea81-6853-478d-a84c-b3f8c4b3396a" />
 <br /><br />
+<img width="1919" height="1018" alt="image" src="https://github.com/user-attachments/assets/39c708fa-4ed4-4cc9-a57c-af05c7f6d40f" />
+<br /><br />
 <img width="1919" height="1019" alt="Ekran görüntüsü 2025-12-27 095814" src="https://github.com/user-attachments/assets/c8476842-5b13-420c-b35e-55b077aaf24b" />
 <br /><br />
 <img width="1919" height="1020" alt="Ekran görüntüsü 2025-12-27 094736" src="https://github.com/user-attachments/assets/8016fd3d-b721-4a5e-8dc7-b3b9d9dcb3b9" />
