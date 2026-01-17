@@ -17,7 +17,7 @@ namespace SahibindenAl.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.11")
+                .HasAnnotation("ProductVersion", "9.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -202,7 +202,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Adverts");
+                    b.ToTable("Adverts", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.AdvertImage", b =>
@@ -235,7 +235,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("AdvertId");
 
-                    b.ToTable("AdvertImages");
+                    b.ToTable("AdvertImages", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.AdvertPropertyValue", b =>
@@ -270,7 +270,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("CategoryPropertyKeyId");
 
-                    b.ToTable("AdvertPropertyValues");
+                    b.ToTable("AdvertPropertyValues", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.Category", b =>
@@ -303,7 +303,38 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
+                });
+
+            modelBuilder.Entity("SahibindenAl.Models.CategoryParentOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryPropertyKeyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryPropertyKeyId");
+
+                    b.ToTable("CategoryParentOptions", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyKey", b =>
@@ -332,47 +363,16 @@ namespace SahibindenAl.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<int?>("ParentPropertyId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CategoryPropertyKeys");
-                });
+                    b.HasIndex("ParentPropertyId");
 
-            modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyOption", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryPropertyKeyId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("CategoryPropertyOptionId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryPropertyKeyId");
-
-                    b.HasIndex("CategoryPropertyOptionId");
-
-                    b.ToTable("CategoryPropertyOptions");
+                    b.ToTable("CategoryPropertyKeys", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.City", b =>
@@ -397,7 +397,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.District", b =>
@@ -427,7 +427,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.ToTable("Districts");
+                    b.ToTable("Districts", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.Favorite", b =>
@@ -454,7 +454,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("AdvertId");
 
-                    b.ToTable("Favorites");
+                    b.ToTable("Favorites", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.User", b =>
@@ -527,7 +527,7 @@ namespace SahibindenAl.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -656,6 +656,17 @@ namespace SahibindenAl.Migrations
                     b.Navigation("ParentCategory");
                 });
 
+            modelBuilder.Entity("SahibindenAl.Models.CategoryParentOption", b =>
+                {
+                    b.HasOne("SahibindenAl.Models.CategoryPropertyKey", "CategoryPropertyKey")
+                        .WithMany("CategoryParentOptions")
+                        .HasForeignKey("CategoryPropertyKeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CategoryPropertyKey");
+                });
+
             modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyKey", b =>
                 {
                     b.HasOne("SahibindenAl.Models.Category", "Category")
@@ -664,22 +675,13 @@ namespace SahibindenAl.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SahibindenAl.Models.CategoryPropertyKey", "ParentProperty")
+                        .WithMany("SubProperties")
+                        .HasForeignKey("ParentPropertyId");
+
                     b.Navigation("Category");
-                });
 
-            modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyOption", b =>
-                {
-                    b.HasOne("SahibindenAl.Models.CategoryPropertyKey", "CategoryPropertyKey")
-                        .WithMany("CategoryPropertyOptions")
-                        .HasForeignKey("CategoryPropertyKeyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SahibindenAl.Models.CategoryPropertyOption", null)
-                        .WithMany("ChildOptions")
-                        .HasForeignKey("CategoryPropertyOptionId");
-
-                    b.Navigation("CategoryPropertyKey");
+                    b.Navigation("ParentProperty");
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.District", b =>
@@ -732,12 +734,9 @@ namespace SahibindenAl.Migrations
 
             modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyKey", b =>
                 {
-                    b.Navigation("CategoryPropertyOptions");
-                });
+                    b.Navigation("CategoryParentOptions");
 
-            modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyOption", b =>
-                {
-                    b.Navigation("ChildOptions");
+                    b.Navigation("SubProperties");
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.City", b =>
