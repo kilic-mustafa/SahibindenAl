@@ -2,27 +2,44 @@
 
 @{
     ViewData["Title"] = "Giriş Yap";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 
-<div class="container mt-5" style="max-width: 500px;">
-    <h2 class="text-center">Giriş Yap</h2>
-    <hr />
-    <form asp-action="Login" method="post">
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <div class="mb-3">
-            <label asp-for="UserName" class="form-label"></label>
-            <input asp-for="UserName" class="form-control" />
-            <span asp-validation-for="UserName" class="text-danger"></span>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4 fw-bold">Giriş Yap</h2>
+                <hr />
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="UserName" class="form-label"></label>
+                        <input asp-for="UserName" class="form-control" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label"></label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                </form>
+
+                <div class="text-center mt-4">
+                        <span class="text-muted">Hesabın yok mu?</span> 
+                        <a href="Register" class="text-primary text-decoration-none fw-bold">Hemen Kaydol</a>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label asp-for="Password" class="form-label"></label>
-            <input asp-for="Password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        <div class="mb-3 form-check">
-            <input asp-for="RememberMe" class="form-check-input" />
-            <label asp-for="RememberMe" class="form-check-label"></label>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
-    </form>
+    </div>
 </div>
