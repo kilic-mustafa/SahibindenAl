@@ -91,5 +91,15 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
             .WithMany(cpk => cpk.CategoryPropertyOptions)
             .HasForeignKey(po => po.CategoryPropertyKeyId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.HasCollation("tr_custom", locale: "tr-TR", provider: "icu");
+
+        modelBuilder.Entity<Advert>()
+            .Property(e => e.Title)
+            .UseCollation("tr_custom");
+
+        modelBuilder.Entity<Advert>()
+            .Property(e => e.Description)
+            .UseCollation("tr_custom");
     }
 }

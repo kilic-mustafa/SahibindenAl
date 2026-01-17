@@ -71,9 +71,14 @@ public class AdvertRepository : GenericRepository<Advert>, IAdvertRepository
 
         if (!string.IsNullOrEmpty(filter.SearchText))
         {
-            var text = filter.SearchText.ToLower();
-            query = query.Where(x => (x.Title != null && x.Title.ToLower().Contains(text)) || 
-                                    (x.Description != null && x.Description.ToLower().Contains(text)));
+            var text = filter.SearchText;
+
+            query = query.Where(x =>
+                (x.Title != null && EF.Functions.ILike(x.Title, $"%{text}%")) ||
+                (x.Description != null && EF.Functions.ILike(x.Description, $"%{text}%")) ||
+                (x.Id.ToString() == text) ||
+                (x.User != null && EF.Functions.ILike(x.User.FirstName + " " + x.User.LastName, $"%{text}%"))         
+                );
         }
 
         query = query.OrderByDescending(x => x.CreatedDate); 
