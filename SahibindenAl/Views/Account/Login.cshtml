@@ -13,6 +13,7 @@
                 <h2 class="text-center mb-4 fw-bold">Giriş Yap</h2>
                 <hr />
                 <form asp-action="Login" method="post">
+                    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
                     <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
                     <div class="mb-3">
