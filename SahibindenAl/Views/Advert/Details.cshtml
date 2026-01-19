@@ -29,11 +29,17 @@
                         onclick="toggleFavorite(@Model.Id)">
                     <i class="fa fa-heart"></i> ★ Favorilerime Ekle
                 </button>
-
-                <button class="btn mb-0" style="width: 90px;">
-                    <i class="fa fa-print"></i> ⎙ Yazdır
-                </button>
             }
+            else
+            {
+                <a href="@Url.Action("Login", "Account", new { returnUrl = Url.Action("Details", "Advert", new { id = Model.Id }) })" 
+                   class="btn mb-0" style="width: 165px;">
+                    <i class="fa fa-heart"></i> ★ Favorilerime Ekle
+                </a>
+            }
+            <button class="btn mb-0" style="width: 90px;">
+                <i class="fa fa-print"></i> ⎙ Yazdır
+            </button>
         </div>
     </div>
 
@@ -51,7 +57,7 @@
                     }
                 </div>
 
-                <div class="carousel-inner" style="height: 500px; background-color: #000;">
+                <div class="carousel-inner" style="height: 496.5px; background-color: #000;">
                     @{ int index = 0; }
                     @if (Model.AdvertImages != null)
                     {
@@ -88,7 +94,7 @@
             <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
 
                 <div class="card p-2 border-0 shadow-sm text-center">
-                    <span class="fs-4 text-primary fw-bold">@Model.Price.ToString("N0") TL ⟳</span>
+                    <span class="fs-4 text-primary fw-bold">@Model.Price.ToString("N0") TL</span>
                 </div>
 
                 <div class="card p-2 border-0 shadow-sm text-center">
@@ -108,7 +114,7 @@
                             <i class="fa fa-phone"></i> Cep ( @Model.User.PhoneNumber )
                         </a>
                     }
-            
+                    
                     <button class="btn btn-primary w-100 mt-2 mb-3">Mesaj Gönder</button>
                 </div>
             </div>

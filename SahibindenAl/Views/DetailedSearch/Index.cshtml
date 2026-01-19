@@ -1,0 +1,175 @@
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model List<SahibindenAl.Models.Advert>
+
+@{
+
+    Layout = "~/Views/Shared/_DetailedSearchLayout.cshtml";
+    ViewData["Title"] = "sahibindenal.com - Türkiyenin Online İkinci El Alışveriş Sitesi";
+    var filter = ViewBag.CurrentFilter as SahibindenAl.DTOs.AdvertFilterDto;
+
+    string searchTitle = "Tüm İlanlar"; 
+    
+    if (!string.IsNullOrEmpty(filter?.SearchText))
+    {
+        searchTitle = filter.SearchText; 
+    }
+    else if (filter?.CategoryId.HasValue == true && ViewBag.Categories != null)
+    {
+        var categories = ViewBag.Categories as List<SahibindenAl.Models.Category>;
+        var selectedCategory = categories?.FirstOrDefault(c => c.Id == filter?.CategoryId!.Value);
+        
+        if (selectedCategory != null)
+        {
+            searchTitle = selectedCategory.Name!; 
+        }
+    }
+
+}
+
+<div class ="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+
+            <div class="mb-4">
+                <h3 class="text-center px-4 py-2 rounded shadow-sm" style="color: rgb(0, 0, 0); background-color:#DEE2E6s;">Detaylı Arama</h3>
+            </div>
+
+            <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="card-body p-5">
+                
+                    <form asp-controller="Home" asp-action="Index" method="get">
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label fw-bold">Kategori</label>
+                                <select name="CategoryId" class="form-select border-light-subtle">
+                                    <option value="">Tüm Kategoriler</option>
+                                    @if (ViewBag.Categories != null)
+                                    {
+                                        foreach (var cat in ViewBag.Categories as List<SahibindenAl.Models.Category>)
+                                        {
+                                            <option value="@cat.Id" selected="@(filter?.CategoryId == cat.Id ? "selected" : null)">@cat.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label fw-bold">Fiyat Aralığı (TL)</label>
+                                <div class="input-group">
+                                    <input type="number" name="MinPrice" value="@filter?.MinPrice" class="form-control border-light-subtle" placeholder="Min" />
+                                    <input type="number" name="MaxPrice" value="@filter?.MaxPrice" class="form-control border-light-subtle" placeholder="Max" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label fw-bold mt-2">İl</label>
+                                <select name="CityId" id="citySelect" class="form-select border-light-subtle">
+                                    <option value="">İl Seçin</option>
+                                    @if (ViewBag.Cities != null)
+                                    {
+                                        foreach (var city in ViewBag.Cities as List<SahibindenAl.Models.City>)
+                                        {
+                                            <option value="@city.Id" selected="@(filter?.CityId == city.Id ? "selected" : null)">@city.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label fw-bold mt-2">İlçe</label>
+                                <select name="DistrictId" id="districtSelect" class="form-select border-light-subtle" @(filter?.CityId == null ? "disabled" : "")>
+                                    <option value="">İlçe Seçin</option>
+                                    @if (ViewBag.Districts != null)
+                                    {
+                                        foreach (var district in ViewBag.Districts as List<SahibindenAl.Models.District>)
+                                        {
+                                            <option value="@district.Id" selected="@(filter?.DistrictId == district.Id ? "selected" : null)">@district.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <hr class="col-md-12"/>
+
+                        <div class="row mt-3">
+
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary w-100 fw-bold py-2" style="background-color: #438ED8;">
+                                    <i class="fa fa-search me-2"></i>Aramayı Başlat
+                                </button>
+                            </div>
+
+                            <div class="col-md-6">
+                                <a href="/DetailedSearch/Index"
+                                class="btn btn-outline-secondary w-100 py-2">
+                                    Filtreleri Sıfırla
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            if ($('#citySelect').val() === "") {
+                 $('#districtSelect').prop('disabled', true);
+            }
+
+            $('#citySelect').change(function () {
+                var cityId = $(this).val();
+                var districtSelect = $('#districtSelect');
+
+                districtSelect.empty();
+
+                if (cityId) {
+                    
+                    districtSelect.prop('disabled', false);
+                    districtSelect.append('<option value="">Yükleniyor...</option>');
+
+                    url: 
+                    $.ajax({
+                        url: '/Home/GetDistricts',
+                        type: 'GET',
+                        data: { cityId: cityId },
+                        success: function (data) {
+                            districtSelect.empty();
+                            districtSelect.append('<option value="">İlçe</option>');
+
+                            $.each(data, function (index, district) {
+                                districtSelect.append('<option value="' + district.id + '">' + district.name + '</option>');
+                            });
+                        },
+                        error: function () {
+                            alert('İlçeler yüklenirken hata oluştu.');
+                            districtSelect.empty();
+                            districtSelect.append('<option value="">İlçe</option>');
+                        }
+                    });
+                } else {
+                    districtSelect.empty();
+                    districtSelect.append('<option value="">İlçe</option>');
+                    districtSelect.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+}

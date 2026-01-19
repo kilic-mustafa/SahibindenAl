@@ -110,7 +110,6 @@
     <script>
         $(document).ready(function () {
             
-            // Şehir seçimi değiştiğinde ilçeleri getir
             $('#citySelect').on('change', function () {
                 var cityId = $(this).val();
                 var districtSelect = $('#districtSelect');
@@ -139,6 +138,32 @@
                 } else {
                     districtSelect.empty().append('<option value="">Önce Şehir Seçiniz...</option>').prop('disabled', true);
                 }
+            });
+
+            const storageKey = "advert_form_draft";
+
+            const savedData = localStorage.getItem(storageKey);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                Object.keys(data).forEach(name => {
+                    $(`[name="${name}"]`).val(data[name]);
+                });
+
+                if ($("#CategoryId").val()) {
+                    $("#CategoryId").trigger("change");
+                }
+            }
+
+            $(document).on("input change", "input, select, textarea", function () {
+                let currentData = {};
+                $("form").serializeArray().forEach(item => {
+                    currentData[item.name] = item.value;
+                });
+                localStorage.setItem(storageKey, JSON.stringify(currentData));
+            });
+
+            $("form").on("submit", function () {
+                localStorage.removeItem(storageKey);
             });
             
             $('#categorySelect').change(function () {
