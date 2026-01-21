@@ -1,31 +1,60 @@
 @model List<CategoryPropertyKey>
+    
+@{
+    var existingValues = ViewBag.ExistingValues as List<SahibindenAl.Models.AdvertPropertyValue>;
+}
+
+<!-- Debug info -->
+<!-- Model count: @Model?.Count ?? 0 -->
 
 @if (Model != null && Model.Count > 0)
 {
     <h5 class="mt-4 mb-3 text-primary">Detaylı Özellikler</h5>
     <div class="row">
-        @foreach (var prop in Model)
+        @foreach (var prop in Model.Where(p => p != null))
         {
+            if (prop.Name == null) continue;
+            
+            var savedValue = existingValues?.FirstOrDefault(v => v.CategoryPropertyKeyId == prop.Id)?.Value;
+
             <div class="col-md-6 mb-3" id="prop-container-@prop.Id">
                 <label class="form-label fw-bold">@prop.Name</label>
+                <!-- Debug: DataType=@prop.DataType, Options Count=@(prop.CategoryPropertyOptions?.Count ?? 0) -->
 
                 @if (prop.DataType == "Number")
                 {
-                    <input type="number" name="dynamicProps[@prop.Id]" class="form-control" placeholder="@prop.Name giriniz" />
+                    <input type="number" name="PropertyValues[@prop.Id]" value="@savedValue" class="form-control" />
                 }
-                else if (prop.DataType == "Select" && prop.CategoryPropertyOptions != null)
+                else if (prop.DataType == "Select")
                 {
-                    <select name="dynamicProps[@prop.Id]" class="form-select">
+                    <select name="PropertyValues[@prop.Id]" class="form-select">
                         <option value="">Seçiniz</option>
-                        @foreach (var option in prop.CategoryPropertyOptions)
+                        @if (prop.CategoryPropertyOptions != null)
                         {
-                            <option value="@option.Value" data-option-id="@option.Id">@option.Value</option>
+                            @foreach (var option in prop.CategoryPropertyOptions)
+                            {
+                                if (option != null && option.Value != null)
+                                {
+                                    @if (savedValue == option.Value)
+                                    {
+                                        <option value="@option.Value" selected>@option.Value</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@option.Value">@option.Value</option>
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <option disabled>Seçenek yok</option>
                         }
                     </select>
                 }
                 else
                 {
-                    <input type="text" name="dynamicProps[@prop.Id]" class="form-control" />
+                    <input type="text" name="PropertyValues[@prop.Id]" value="@savedValue" class="form-control" />
                 }
             </div>
         }
@@ -37,38 +66,3 @@ else
         <i class="fa fa-info-circle"></i> Bu kategori için özel özellikler tanımlanmamıştır.
     </div>
 }
-
-<script>
-$(document).ready(function() {
-    $('[data-parent-id]').on('change', function() {
-        var parentId = $(this).data('parent-id');
-        var selectedOptionId = $(this).find('option:selected').data('option-id');
-        
-        var childSelect = $(`[data-child-for="${parentId}"]`);
-
-        childSelect.empty().append('<option value="">Seçiniz</option>').prop('disabled', true);
-
-        if (selectedOptionId) {
-            $.ajax({
-                url: '@Url.Action("GetChildOptions", "Advert")',
-                type: 'GET',
-                data: { parentOptionId: selectedOptionId },
-                success: function(options) {
-                    if (options && options.length > 0) {
-                        childSelect.prop('disabled', false);
-                        $.each(options, function(i, option) {
-                            childSelect.append($('<option>', {
-                                value: option.value, 
-                                text: option.value
-                            }).attr('data-option-id', option.id));
-                        });
-                    }
-                },
-                error: function() {
-                    console.error('Alt seçenekler yüklenirken bir hata oluştu.');
-                }
-            });
-        }
-    });
-});
-</script>

@@ -3,7 +3,7 @@
 
 @{
 
-    Layout = "~/Views/Shared/_DetailedSearchLayout.cshtml";
+    Layout = "~/Views/Shared/_LayoutWithoutSearch.cshtml";
     ViewData["Title"] = "sahibindenal.com - Türkiyenin Online İkinci El Alışveriş Sitesi";
     var filter = ViewBag.CurrentFilter as SahibindenAl.DTOs.AdvertFilterDto;
 
@@ -46,7 +46,7 @@
                                     <option value="">Tüm Kategoriler</option>
                                     @if (ViewBag.Categories != null)
                                     {
-                                        foreach (var cat in ViewBag.Categories as List<SahibindenAl.Models.Category>)
+                                        foreach (var cat in ViewBag.Categories as List<SahibindenAl.Models.Category> ?? new List<SahibindenAl.Models.Category>())
                                         {
                                             <option value="@cat.Id" selected="@(filter?.CategoryId == cat.Id ? "selected" : null)">@cat.Name</option>
                                         }
@@ -74,7 +74,7 @@
                                     <option value="">İl Seçin</option>
                                     @if (ViewBag.Cities != null)
                                     {
-                                        foreach (var city in ViewBag.Cities as List<SahibindenAl.Models.City>)
+                                        foreach (var city in ViewBag.Cities as List<SahibindenAl.Models.City> ?? new List<SahibindenAl.Models.City>())
                                         {
                                             <option value="@city.Id" selected="@(filter?.CityId == city.Id ? "selected" : null)">@city.Name</option>
                                         }
@@ -91,7 +91,7 @@
                                     <option value="">İlçe Seçin</option>
                                     @if (ViewBag.Districts != null)
                                     {
-                                        foreach (var district in ViewBag.Districts as List<SahibindenAl.Models.District>)
+                                        foreach (var district in ViewBag.Districts as List<SahibindenAl.Models.District> ?? new List<SahibindenAl.Models.District>())
                                         {
                                             <option value="@district.Id" selected="@(filter?.DistrictId == district.Id ? "selected" : null)">@district.Name</option>
                                         }

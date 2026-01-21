@@ -118,4 +118,35 @@ public class AdvertRepository : GenericRepository<Advert>, IAdvertRepository
             .Where(x => x.Id == parentOptionId)
             .ToListAsync();
     }
+
+    public async Task<List<Advert>> GetAdvertsByUserIdWithDetailsAsync(int userId)
+    {
+        return await _context.Adverts
+            .Where(x => x.UserId == userId && !x.IsDeleted)
+            .Include(x => x.Category)
+            .Include(x => x.City)
+            .Include(x => x.District)
+            .Include(x => x.AdvertImages)
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
+    }
+
+    public async Task UpdateAdvertAsync(Advert advert, List<AdvertPropertyValue> newPropertyValues)
+    {
+        var oldValues = await _context.AdvertPropertyValues
+            .Where(x => x.AdvertId == advert.Id)
+            .ToListAsync();
+        
+        _context.AdvertPropertyValues.RemoveRange(oldValues);
+
+        foreach (var val in newPropertyValues)
+        {
+            val.AdvertId = advert.Id;
+            await _context.AdvertPropertyValues.AddAsync(val);
+        }
+
+        _context.Adverts.Update(advert);
+        
+        await _context.SaveChangesAsync();
+    }
 }

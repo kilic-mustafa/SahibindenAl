@@ -7,6 +7,8 @@ public class User : IdentityUser<int>
     public string? FirstName { get; set; }
     
     public string? LastName { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public ICollection<Advert> Adverts { get; set; } 
     public ICollection<Favorite> Favorites { get; set; }

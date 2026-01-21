@@ -58,16 +58,6 @@ public class AdvertController : Controller
 
 
     
-    [HttpGet]
-    public async Task<IActionResult> GetCategoryProperties(int categoryId)
-    {
-        
-        var properties = await _advertService.GetCategoryPropertiesAsync(categoryId);
-
-        
-        return PartialView("_DynamicProperties", properties);
-    }
-
     
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -118,4 +108,72 @@ public class AdvertController : Controller
             return View(dto);
         }
     }
+
+    public async Task<IActionResult> MyAdverts()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login", "Account");
+
+        var myAdverts = await _advertService.GetAdvertsByUserIdAsync(user.Id);
+
+        return View(myAdverts);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Update(int id)
+    {
+        var advert = await _advertService.GetAdvertByIdAsync(id);
+        if (advert == null) return NotFound();
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null || advert.UserId != user.Id)
+        {
+            return Forbid(); 
+        }
+
+        await PopulateDropdownsAsync();
+
+        return View(advert);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(int id, Advert model, List<IFormFile> NewPhotos, Dictionary<int, string> PropertyValues)
+    {
+        try 
+        {
+            await _advertService.UpdateAdvertAsync(id, model, NewPhotos, PropertyValues);
+            
+            TempData["SuccessMessage"] = "İlan başarıyla güncellendi.";
+            return RedirectToAction(nameof(MyAdverts));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Güncelleme sırasında bir hata oluştu: " + ex.Message);
+            await PopulateDropdownsAsync();
+            return View(model);
+        }
+    }   
+
+    [HttpGet]
+    public async Task<IActionResult> GetCategoryProperties(int categoryId, int? advertId = null)
+    {
+        try
+        {
+            var properties = await _advertService.GetCategoryPropertiesAsync(categoryId);
+            
+            if (advertId.HasValue && advertId > 0)
+            {
+                var advert = await _advertService.GetAdvertByIdAsync(advertId.Value);
+                ViewBag.ExistingValues = advert?.AdvertPropertyValues?.ToList() ?? new List<AdvertPropertyValue>();
+            }
+
+            return PartialView("_DynamicProperties", properties);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error loading properties: {ex.Message}");
+        }
+    }
+
 }

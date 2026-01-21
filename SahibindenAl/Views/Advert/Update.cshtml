@@ -1,0 +1,164 @@
+@using SahibindenAl.DTOs
+@model Advert 
+
+@{
+    ViewData["Title"] = "İlanı Güncelle";
+    Layout = "~/Views/Shared/_AdvertLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="mb-4">
+                <h3 class="text-center px-4 py-2 rounded shadow-sm" style="color: rgb(0, 0, 0); background-color:#DEE2E6;">
+                    İlanı Güncelle
+                </h3>
+            </div>
+
+            <div class="card border-0 shadow-lg" style="border-radius: 15px;">
+                <div class="card-body p-5">
+
+                    <form asp-action="Update" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">İlan Başlığı</label>
+                                <input asp-for="Title" class="form-control" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Fiyat (TL)</label>
+                                <input asp-for="Price" type="number" class="form-control" />
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Açıklama</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Kategori Seçin</label>
+                            <select asp-for="CategoryId" class="form-select" id="categorySelect">
+                                @foreach (var cat in ViewBag.Categories as List<Category> ?? new List<Category>())
+                                {
+                                    <option value="@cat.Id">@cat.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div id="dynamicContentArea" class="p-3 border rounded bg-light mb-3"></div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="fw-bold">Şehir</label>
+                                <select asp-for="CityId" class="form-select" id="citySelect">
+                                    @foreach (var city in ViewBag.Cities as List<SahibindenAl.Models.City> ?? new List<SahibindenAl.Models.City>())
+                                    {
+                                        <option value="@city.Id">@city.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="fw-bold">İlçe</label>
+                                <select asp-for="DistrictId" class="form-select" id="districtSelect">
+                                    </select>
+                            </div>
+                        </div>
+
+                        @if (Model.AdvertImages != null && Model.AdvertImages.Any())
+                        {
+                            <div class="mt-4">
+                                <label class="fw-bold">Mevcut Fotoğraflar</label>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    @foreach (var img in Model.AdvertImages)
+                                    {
+                                        <div class="position-relative">
+                                            <img src="@img.ImageUrl" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <div class="mb-3 mt-4">
+                            <label class="form-label fw-bold">Yeni Fotoğraf Ekle</label>
+                            <input type="file" name="NewPhotos" class="form-control" multiple accept="image/*" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-4 btn-lg w-100" style="background-color: #438ED8;">
+                            Değişiklikleri Kaydet
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    
+    <script>
+        $(document).ready(function () {
+            var initialCityId = $('#citySelect').val();
+            var initialDistrictId = '@(Model?.DistrictId ?? 0)'; 
+            var advertId = parseInt('@(Model?.Id ?? 0)');
+
+            if (initialCityId > 0) {
+                loadDistricts(initialCityId, initialDistrictId);
+            }
+
+            var initialCatId = parseInt($('#categorySelect').val());
+            if (initialCatId > 0) {
+                loadCategoryProperties(initialCatId, advertId);
+            }
+
+            $('#citySelect').on('change', function () {
+                loadDistricts($(this).val(), null);
+            });
+
+            $('#categorySelect').on('change', function () {
+                loadCategoryProperties($(this).val(), advertId);
+            });
+
+            function loadDistricts(cityId, selectedDistrictId) {
+                var districtSelect = $('#districtSelect');
+                $.get('@Url.Action("GetDistrictsByCity", "Advert")', { cityId: cityId }, function (data) {
+                    districtSelect.empty().append('<option value="">İlçe Seçiniz...</option>');
+                    $.each(data, function (i, d) {
+                        var selected = (d.id == selectedDistrictId) ? 'selected' : '';
+                        districtSelect.append('<option value="' + d.id + '" ' + selected + '>' + d.name + '</option>');
+                    });
+                });
+            }
+
+            function loadCategoryProperties(catId, advId) {
+                console.log("Loading category properties: catId=" + catId + ", advId=" + advId);
+                $.ajax({
+                    url: '@Url.Action("GetCategoryProperties", "Advert")',
+                    type: 'GET',
+                    data: { 
+                        categoryId: catId, 
+                        advertId: advId 
+                    },
+                    success: function (response) {
+                        console.log("Properties loaded successfully");
+                        console.log("Response: " + response);
+                        $('#dynamicContentArea').html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error loading properties: " + status + " - " + error);
+                        console.error("Response: " + xhr.responseText);
+                        $('#dynamicContentArea').html('<p class="text-danger">Özellikler yüklenemedi. Hata: ' + error + '</p>');
+                    }
+                });
+            }
+        });
+    </script>
+}
