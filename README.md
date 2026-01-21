@@ -30,10 +30,11 @@ The main directories and files of the project are explained below:
 ```
 SahibindenAl/
 ├── Controllers/      # Controllers that handle incoming requests and return responses.
-│   ├── AccountController.cs  # User login/registration operations.
-│   ├── AdvertController.cs   # Ad creation and viewing operations.
-│   └── HomeController.cs     # Homepage and ad listing/filtering.
-├── Data/               # Database context and migrations.
+│   ├── AccountController.cs          # User login/registration operations.
+│   ├── AdvertController.cs           # Ad creation and viewing operations.
+│   ├── DetailedSearchController.cs   # Advanced filtering and detailed search operations.
+|   └── HomeController.cs             # Homepage and ad listing/filtering.
+├── Data/                             # Database context and migrations.
 │   └── AppDbContext.cs
 ├── DTOs/               # Data Transfer Objects.
 ├── Models/             # Classes representing database entities.
