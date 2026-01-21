@@ -18,6 +18,14 @@ public interface IAdvertService
     Task ToggleFavoriteAsync(int userId, int advertId);
 
     Task<IEnumerable<Category>> GetSubCategoriesAsync();
+
     Task<IEnumerable<City>> GetAllCitiesAsync();
+
     Task<IEnumerable<District>> GetDistrictsByCityIdAsync(int cityId);
+
+    Task<List<Advert>> GetAdvertsByUserIdAsync(int userId);
+
+    Task UpdateAdvertAsync(int id, Advert updatedAdvert, List<IFormFile> newPhotos, Dictionary<int, string> dynamicProperties);
+
+    
 }

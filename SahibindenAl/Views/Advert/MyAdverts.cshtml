@@ -1,0 +1,71 @@
+@model List<SahibindenAl.Models.Advert>
+
+@{
+    ViewData["Title"] = "İlanlarım";
+    Layout = "~/Views/Shared/_LayoutWithoutSearch.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+
+            <div class="mb-4">
+                <h3 class="text-center px-4 py-2 rounded shadow-sm" style="color: rgb(0, 0, 0); background-color:#DEE2E6s;">İlanlarım</h3>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle"> <thead class="table-light">
+                        <tr>
+                            <th style="width: 100px;">Resim</th>
+                            <th>Başlık</th>
+                            <th>Fiyat (TL)</th>
+                            <th>Kategori</th>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                            <th class="text-end">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var advert in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @{
+                                        var coverImage = advert.AdvertImages?.FirstOrDefault(i => i.IsCoverImage)?.ImageUrl 
+                                                        ?? advert.AdvertImages?.FirstOrDefault()?.ImageUrl 
+                                                        ?? "/img/no-image.png";
+                                    }
+                                    <img src="@coverImage" class="img-thumbnail" style="width: 80px; height: 60px; object-fit: cover;" alt="İlan Resmi">
+                                </td>
+
+                                <td class="fw-bold">@advert.Title</td>
+                                <td>@advert.Price.ToString("N2") ₺</td>
+                                <td>
+                                    <span class="badge bg-info text-dark">@advert.Category?.Name</span>
+                                </td>
+                                <td>@advert.CreatedDate.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    @if (advert.IsActive)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Pasif</span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+                                    <a asp-controller="Advert" asp-action="Update" asp-route-id="@advert.Id" class="btn btn-sm btn-outline-primary shadow-sm">
+                                        <i class="fas fa-edit me-1"></i> Güncelle
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -166,4 +166,58 @@ public class AdvertService : IAdvertService
     {
         return await _categoryRepository.Where(c => c.ParentCategoryId != null).ToListAsync();
     }
+
+    public async Task<List<Advert>> GetAdvertsByUserIdAsync(int userId)
+    {
+        return await _advertRepository.GetAdvertsByUserIdWithDetailsAsync(userId);
+    }
+
+    public async Task UpdateAdvertAsync(int id, Advert updatedAdvert, List<IFormFile> newPhotos, Dictionary<int, string> dynamicProperties)
+    {
+        var existingAdvert = await _advertRepository.GetAdvertWithDetailsAsync(id);
+        if (existingAdvert == null) throw new KeyNotFoundException("İlan bulunamadı.");
+
+        existingAdvert.Title = updatedAdvert.Title;
+        existingAdvert.Description = updatedAdvert.Description;
+        existingAdvert.Price = updatedAdvert.Price;
+        existingAdvert.CategoryId = updatedAdvert.CategoryId;
+        existingAdvert.CityId = updatedAdvert.CityId;
+        existingAdvert.DistrictId = updatedAdvert.DistrictId;
+        existingAdvert.IsActive = updatedAdvert.IsActive;
+
+        var propertyValues = new List<AdvertPropertyValue>();
+        if (dynamicProperties != null)
+        {
+            foreach (var prop in dynamicProperties)
+            {
+                if (!string.IsNullOrEmpty(prop.Value))
+                {
+                    propertyValues.Add(new AdvertPropertyValue
+                    {
+                        CategoryPropertyKeyId = prop.Key,
+                        Value = prop.Value,
+                        AdvertId = id,
+                        IsActive = true
+                    });
+                }
+            }
+        }
+
+        if (newPhotos != null && newPhotos.Count > 0)
+        {
+            foreach (var file in newPhotos)
+            {
+                string imagePath = await SaveFileAsync(file);
+                existingAdvert.AdvertImages.Add(new AdvertImage
+                {
+                    ImageUrl = imagePath,
+                    IsCoverImage = false,
+                    IsActive = true,
+                    IsDeleted = false
+                });
+            }
+        }
+
+        await _advertRepository.UpdateAdvertAsync(existingAdvert, propertyValues);
+    }
 }

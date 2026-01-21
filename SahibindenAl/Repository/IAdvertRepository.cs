@@ -11,4 +11,6 @@ public interface IAdvertRepository : IGenericRepository<Advert>
     Task CreateAdvertAsync(Advert advert, List<AdvertPropertyValue> advertPropertyValues);
     Task<List<CategoryPropertyKey>> GetCategoryPropertiesAsync(int categoryId);
     Task<IEnumerable<CategoryPropertyOption>> GetChildOptionsAsync(int parentOptionId);
-}
+    Task<List<Advert>> GetAdvertsByUserIdWithDetailsAsync(int userId);
+    Task UpdateAdvertAsync(Advert advert, List<AdvertPropertyValue> newPropertyValues);
+}   

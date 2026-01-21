@@ -106,7 +106,7 @@
                 <div class="card-header bg-white fw-bold">Satıcı Bilgileri</div>
                 <div class="card-body">
                     <h5 class="card-title">@Model.User?.FirstName @Model.User?.LastName</h5>
-                    <p class="card-subtitle mb-2 text-muted">Hesap açma tarihi: Mart 2023</p>
+                    <p class="card-subtitle mb-2 text-muted">Hesap açma tarihi: @Model.User?.CreatedAt.ToString("MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</p>
 
                     @if (!string.IsNullOrEmpty(Model.User?.PhoneNumber))
                     {

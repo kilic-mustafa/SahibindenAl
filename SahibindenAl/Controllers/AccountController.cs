@@ -19,6 +19,52 @@ public class AccountController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> AccountSettings()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        return View(user);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateAccount(User updatedUser)
+    {
+        var user = await _userManager.FindByIdAsync(updatedUser.Id.ToString());
+        
+        if (user == null) return NotFound();
+
+        user.FirstName = updatedUser.FirstName;
+        user.LastName = updatedUser.LastName;
+        user.UserName = updatedUser.UserName;
+        user.Email = updatedUser.Email;
+        user.PhoneNumber = updatedUser.PhoneNumber;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+
+            await _signInManager.RefreshSignInAsync(user);
+
+            TempData["SuccessMessage"] = "Bilgileriniz başarıyla güncellendi.";
+            return RedirectToAction(nameof(AccountSettings)); 
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
+        }
+
+        return View("AccountSettings", updatedUser);
+    }
+
+    [HttpGet]
     public IActionResult Register()
     {
         return View();
@@ -107,4 +153,5 @@ public class AccountController : Controller
         await _advertService.ToggleFavoriteAsync(user.Id, advertId);
         return Ok();
     }
+    
 }

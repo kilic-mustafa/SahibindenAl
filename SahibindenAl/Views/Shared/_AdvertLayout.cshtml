@@ -47,10 +47,10 @@
                             <li><span class="dropdown-header text-secondary fw-bold fw-bold fs-6 ps-3">@($"{currentUser!.FirstName} {currentUser!.LastName}".ToUpper())</span></li>
                             <li><hr class="dropdown-divider"></li>
 
-                            <li><a class="dropdown-item text-black" href="#">Hesabım</a></li>
+                            <li><a class="dropdown-item text-black" asp-controller="Account" asp-action="AccountSettings">Hesap Ayarları</a></li>
                             <li><hr class="dropdown-divider"></li>
 
-                            <li><a class="dropdown-item text-black" href="#">İlanlarım</a></li>
+                            <li><a class="dropdown-item text-black" asp-controller="Advert" asp-action="MyAdverts">İlanlarım</a></li>
                             <li><hr class="dropdown-divider"></li>
 
                             <li><a class="dropdown-item textsblack" href="#">Favorilerim</a></li>
