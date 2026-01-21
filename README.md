@@ -34,7 +34,7 @@ SahibindenAl/
 │   ├── AdvertController.cs           # Ad creation and viewing operations.
 │   ├── DetailedSearchController.cs   # Advanced filtering and detailed search operations.
 |   └── HomeController.cs             # Homepage and ad listing/filtering.
-├── Data/                             # Database context and migrations.
+├── Data/               # Database context and migrations.
 │   └── AppDbContext.cs
 ├── DTOs/               # Data Transfer Objects.
 ├── Models/             # Classes representing database entities.
