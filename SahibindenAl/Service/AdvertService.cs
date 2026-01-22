@@ -172,23 +172,22 @@ public class AdvertService : IAdvertService
         return await _advertRepository.GetAdvertsByUserIdWithDetailsAsync(userId);
     }
 
-    public async Task UpdateAdvertAsync(int id, Advert updatedAdvert, List<IFormFile> newPhotos, Dictionary<int, string> dynamicProperties)
+    public async Task UpdateAdvertAsync(AdvertUpdateDto dto)
     {
-        var existingAdvert = await _advertRepository.GetAdvertWithDetailsAsync(id);
+        var existingAdvert = await _advertRepository.GetAdvertWithDetailsAsync(dto.Id);
         if (existingAdvert == null) throw new KeyNotFoundException("İlan bulunamadı.");
 
-        existingAdvert.Title = updatedAdvert.Title;
-        existingAdvert.Description = updatedAdvert.Description;
-        existingAdvert.Price = updatedAdvert.Price;
-        existingAdvert.CategoryId = updatedAdvert.CategoryId;
-        existingAdvert.CityId = updatedAdvert.CityId;
-        existingAdvert.DistrictId = updatedAdvert.DistrictId;
-        existingAdvert.IsActive = updatedAdvert.IsActive;
+        existingAdvert.Title = dto.Title;
+        existingAdvert.Description = dto.Description;
+        existingAdvert.Price = dto.Price;
+        existingAdvert.CategoryId = dto.CategoryId;
+        existingAdvert.CityId = dto.CityId;
+        existingAdvert.DistrictId = dto.DistrictId;
 
         var propertyValues = new List<AdvertPropertyValue>();
-        if (dynamicProperties != null)
+        if (dto.PropertyValues != null)
         {
-            foreach (var prop in dynamicProperties)
+            foreach (var prop in dto.PropertyValues)
             {
                 if (!string.IsNullOrEmpty(prop.Value))
                 {
@@ -196,16 +195,16 @@ public class AdvertService : IAdvertService
                     {
                         CategoryPropertyKeyId = prop.Key,
                         Value = prop.Value,
-                        AdvertId = id,
+                        AdvertId = dto.Id,
                         IsActive = true
                     });
                 }
             }
         }
 
-        if (newPhotos != null && newPhotos.Count > 0)
+        if (dto.NewPhotos != null && dto.NewPhotos.Count > 0)
         {
-            foreach (var file in newPhotos)
+            foreach (var file in dto.NewPhotos)
             {
                 string imagePath = await SaveFileAsync(file);
                 existingAdvert.AdvertImages.Add(new AdvertImage

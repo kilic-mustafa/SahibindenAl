@@ -25,7 +25,7 @@ public interface IAdvertService
 
     Task<List<Advert>> GetAdvertsByUserIdAsync(int userId);
 
-    Task UpdateAdvertAsync(int id, Advert updatedAdvert, List<IFormFile> newPhotos, Dictionary<int, string> dynamicProperties);
+    Task UpdateAdvertAsync(AdvertUpdateDto dto);
 
     
 }
