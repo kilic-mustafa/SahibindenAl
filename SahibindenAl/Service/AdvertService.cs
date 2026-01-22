@@ -124,34 +124,12 @@ public class AdvertService : IAdvertService
     {
         return await _advertRepository.GetAdvertsByFilterAsync(filter);
     }
-    
-    public async Task ToggleFavoriteAsync(int userId, int advertId)
+
+    public async Task<bool> ToggleFavoriteAsync(int userId, int advertId)
     {
-        var advert = await _advertRepository.GetByIdAsync(advertId);
-        if (advert == null)
-        {
-            throw new KeyNotFoundException("Advert not found");
-        }
-
-        var existingFavorite = advert.Favorites?.FirstOrDefault(f => f.UserId == userId);
-        if (existingFavorite != null)
-        {
-            advert.Favorites!.Remove(existingFavorite);
-        }
-        else
-        {
-            advert.Favorites ??= new List<Favorite>();
-            advert.Favorites.Add(new Favorite
-            {
-                UserId = userId,
-                AdvertId = advertId
-            });
-        }
-
-        _advertRepository.Update(advert);
-        await _advertRepository.SaveAsync();
+        return await _advertRepository.ToggleFavoriteAsync(userId, advertId);
     }
-
+    
     public async Task<IEnumerable<City>> GetAllCitiesAsync()
     {
         return await _cityRepository.GetAllAsync();
@@ -170,6 +148,11 @@ public class AdvertService : IAdvertService
     public async Task<List<Advert>> GetAdvertsByUserIdAsync(int userId)
     {
         return await _advertRepository.GetAdvertsByUserIdWithDetailsAsync(userId);
+    }
+
+    public async Task<List<Advert>> GetFavoriteAdvertsByUserIdAsync(int userId)
+    {
+        return await _advertRepository.GetFavoriteAdvertsByUserIdAsync(userId);
     }
 
     public async Task UpdateAdvertAsync(AdvertUpdateDto dto)
@@ -218,5 +201,10 @@ public class AdvertService : IAdvertService
         }
 
         await _advertRepository.UpdateAdvertAsync(existingAdvert, propertyValues);
+    }
+
+    public async Task<bool> IsAdvertFavoriteAsync(int userId, int advertId)
+    {
+        return await _advertRepository.AnyFavoriteAsync(userId, advertId);
     }
 }

@@ -1,0 +1,105 @@
+@model List<SahibindenAl.Models.Advert>
+
+@{
+    ViewData["Title"] = "Favorilerim";
+    Layout = "~/Views/Shared/_LayoutWithoutSearch.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+
+            <div class="mb-4">
+                <h3 class="text-center px-4 py-2 rounded shadow-sm" style="color: rgb(0, 0, 0); background-color:#DEE2E6;">Favorilerim</h3>
+            </div>
+
+        
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="alert alert-light text-center border shadow-sm">
+                    <p class="mb-0">Henüz favorilere eklediğiniz bir ilan bulunmuyor.</p>
+                    <a href="/" class="btn btn-primary btn-sm mt-3">İlanlara Göz At</a>
+                </div>
+            }
+            else
+            {
+                <div class="row" id="favorites-container">
+                    @foreach (var advert in Model)
+                    {
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4" id="favorite-card-@advert.Id">
+                            <div class="card h-100 shadow-sm border-0 position-relative">
+                                                                
+                                @{
+                                    var coverImage = advert.AdvertImages?.FirstOrDefault(i => i.IsCoverImage)?.ImageUrl 
+                                                    ?? advert.AdvertImages?.FirstOrDefault()?.ImageUrl 
+                                                    ?? "/images/no-image.png";
+                                }
+                                <img src="@coverImage" class="card-img-top" alt="@advert.Title" style="height: 180px; object-fit: cover;">
+
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title text-truncate" title="@advert.Title">@advert.Title</h6>
+                                    
+                                    <div class="mt-auto">
+                                        <p class="card-text text-primary fw-bold mb-1">
+                                            @advert.Price.ToString("N0") ₺
+                                        </p>
+                                        <p class="text-muted small mb-2">
+                                            <i class="bi bi-geo-alt"></i> @(advert.City?.Name ?? "Şehir Belirtilmemiş") / @(advert.District?.Name ?? "")
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
+                                    <a asp-controller="Advert" asp-action="Details" asp-route-id="@advert.Id" 
+                                       class="btn btn-outline-dark btn-sm flex-grow-1">İlana Git</a>
+                                    
+                                    <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="removeFavorite(@advert.Id)" title="Favoriden Kaldır">
+                                        <i class="bi bi-trash">Favorimden Çıkar</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function removeFavorite(id) {
+            if (confirm('Bu ilanı favorilerinizden kaldırmak istediğinize emin misiniz?')) {
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '/Account/ToggleFavorite',
+                    type: 'POST',
+                    data: { 
+                        advertId: id,
+                        __RequestVerificationToken: token 
+                    },
+                    success: function () {
+                        $(`#favorite-card-${id}`).fadeOut(400, function() {
+                            $(this).remove();
+                            if ($('#favorites-container').children().length === 0) {
+                                location.reload(); 
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert('İşlem sırasında bir hata oluştu. Giriş yaptığınızdan emin olun.');
+                    },
+                    data: { 
+                        advertId: id, 
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() 
+                    }
+                });
+            }
+        }
+    </script>
+}

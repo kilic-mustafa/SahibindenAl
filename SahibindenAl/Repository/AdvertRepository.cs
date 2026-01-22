@@ -136,7 +136,7 @@ public class AdvertRepository : GenericRepository<Advert>, IAdvertRepository
         var oldValues = await _context.AdvertPropertyValues
             .Where(x => x.AdvertId == advert.Id)
             .ToListAsync();
-        
+
         _context.AdvertPropertyValues.RemoveRange(oldValues);
 
         foreach (var val in newPropertyValues)
@@ -146,7 +146,52 @@ public class AdvertRepository : GenericRepository<Advert>, IAdvertRepository
         }
 
         _context.Adverts.Update(advert);
-        
+
         await _context.SaveChangesAsync();
     }
+
+    public async Task<bool> ToggleFavoriteAsync(int userId, int advertId)
+    {
+        var existingFavorite = await _context.Favorites
+            .FirstOrDefaultAsync(f => f.UserId == userId && f.AdvertId == advertId);
+
+        bool isAdded;
+        if (existingFavorite != null)
+        {
+            _context.Favorites.Remove(existingFavorite);
+            isAdded = false;
+        }
+        else
+        {
+            await _context.Favorites.AddAsync(new Favorite
+            {
+                UserId = userId,
+                AdvertId = advertId
+            });
+            isAdded = true;
+        }
+
+        await _context.SaveChangesAsync();
+        return isAdded;
+    }
+
+    public async Task<List<Advert>> GetFavoriteAdvertsByUserIdAsync(int userId)
+    {
+        return await _context.Favorites
+            .Where(f => f.UserId == userId)
+            .Include(f => f.Advert)
+                .ThenInclude(a => a.AdvertImages)
+            .Where(f => f.Advert != null)
+            .Include(f => f.Advert.City)
+            .Include(f => f.Advert.District)
+            .Select(f => f.Advert!)
+            .ToListAsync();
+    }
+    
+    public async Task<bool> AnyFavoriteAsync(int userId, int advertId)
+    {
+        return await _context.Favorites
+            .AnyAsync(f => f.UserId == userId && f.AdvertId == advertId);
+    }
+
 }
