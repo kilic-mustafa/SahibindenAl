@@ -25,9 +25,15 @@
         <div class="d-flex align-items-center gap-2">   
             @if (User?.Identity?.IsAuthenticated == true)
             {
-                <button id="btnFavorite" class="btn mb-0" style="width: 165px;"
+
+                var isFav = ViewBag.IsFavorite ?? false;
+                var btnText = isFav ? "★ Favorilerimde" : "★ Favorilerime Ekle";
+                var btnClass = isFav ? "text-danger" : "";
+
+                <button id="btnFavorite" class="btn mb-0 @btnClass" 
+                        style="width: 165px;"
                         onclick="toggleFavorite(@Model.Id)">
-                    <i class="fa fa-heart"></i> ★ Favorilerime Ekle
+                        <i class="fa fa-heart"></i> @btnText
                 </button>
             }
             else
@@ -274,18 +280,31 @@
                     advertId: advertId
                 },
                 success: function (response) {
-                    
-                    Swal.fire({
-                        position: 'top-end',          
-                        icon: 'success',               
-                        title: 'İlan favorilerime eklendi!',
-                        showConfirmButton: false,     
-                        timer: 1500,                  
-                        toast: true                   
-                    });
+                    console.log(response);
+                    if (response.isAdded) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'İlan favorilerime eklendi!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            toast: true
+                        });
+                        $("#btnFavorite").html('<i class="fa fa-heart"></i> ★ Favorilerimde').addClass("text-danger");
+                    } else {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'info', 
+                            title: 'İlan favorilerimden çıkarıldı!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            toast: true
+                        });
+                        $("#btnFavorite").html('<i class="fa fa-heart"></i> ★ Favorilerime Ekle').removeClass("text-danger");
+                    }
                 },
                 error: function (xhr) {
-                    
+                    console.log(xhr);
                     if (xhr.status === 401) {
                         Swal.fire({
                             icon: 'warning',
@@ -297,10 +316,10 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Hata!',
-                            text: 'İlan zaten favorilerime eklenmiş.',
+                            text: 'Bir hata oluştu.',
                             toast: true,
                             position: 'top-end',
-                            timer: 3000,
+                            timer: 3000, 
                             showConfirmButton: false
                         });
                     }

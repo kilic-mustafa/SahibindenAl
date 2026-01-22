@@ -13,4 +13,7 @@ public interface IAdvertRepository : IGenericRepository<Advert>
     Task<IEnumerable<CategoryPropertyOption>> GetChildOptionsAsync(int parentOptionId);
     Task<List<Advert>> GetAdvertsByUserIdWithDetailsAsync(int userId);
     Task UpdateAdvertAsync(Advert advert, List<AdvertPropertyValue> newPropertyValues);
-}   
+    Task<bool> ToggleFavoriteAsync(int userId, int advertId);
+    Task<List<Advert>> GetFavoriteAdvertsByUserIdAsync(int userId);
+    Task<bool> AnyFavoriteAsync(int userId, int advertId);
+}

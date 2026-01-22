@@ -15,7 +15,7 @@ public interface IAdvertService
 
     Task<List<Advert>> GetFilteredAdvertsAsync(AdvertFilterDto filter);
 
-    Task ToggleFavoriteAsync(int userId, int advertId);
+    Task<bool> ToggleFavoriteAsync(int userId, int advertId);
 
     Task<IEnumerable<Category>> GetSubCategoriesAsync();
 
@@ -25,7 +25,11 @@ public interface IAdvertService
 
     Task<List<Advert>> GetAdvertsByUserIdAsync(int userId);
 
+    Task<List<Advert>> GetFavoriteAdvertsByUserIdAsync(int userId);
+
     Task UpdateAdvertAsync(AdvertUpdateDto dto);
+
+    Task<bool> IsAdvertFavoriteAsync(int userId, int advertId);
 
     
 }

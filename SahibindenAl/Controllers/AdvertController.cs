@@ -2,6 +2,7 @@ using SahibindenAl.DTOs;
 using SahibindenAl.Models;
 using SahibindenAl.Service;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.Design;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 
@@ -27,9 +28,18 @@ public class AdvertController : Controller
 
         if (advert == null)
         {
-            return NotFound(); 
+            return NotFound();
         }
 
+        bool isFavorite = false;
+        if (User.Identity.IsAuthenticated)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            
+            isFavorite = await _advertService.IsAdvertFavoriteAsync(user.Id, id);
+        }
+        
+        ViewBag.IsFavorite = isFavorite;
         return View(advert);
     }
 

@@ -31,6 +31,19 @@ public class AccountController : Controller
         return View(user);
     }
 
+    public async Task<IActionResult> MyFavorites()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var favoriteAdverts = await _advertService.GetFavoriteAdvertsByUserIdAsync(user.Id);
+
+        return View(favoriteAdverts);
+    }    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateAccount(User updatedUser)
@@ -142,16 +155,26 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ToggleFavorite(int advertId)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user == null) return Unauthorized();
+        if (user == null) 
+        {
+            return Unauthorized(new { message = "Lütfen önce giriş yapın." });
+        }
 
-        await _advertService.ToggleFavoriteAsync(user.Id, advertId);
-        return Ok();
+        try 
+        {
+            var isAdded = await _advertService.ToggleFavoriteAsync(user.Id, advertId);
+            
+            return Ok(new { success = true, isAdded = isAdded }); 
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "İşlem sırasında bir hata oluştu.", detail = ex.Message });
+        }
     }
     
 }
