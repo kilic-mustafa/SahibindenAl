@@ -1,5 +1,5 @@
 @using SahibindenAl.DTOs
-@model Advert 
+@model AdvertUpdateDto
 
 @{
     ViewData["Title"] = "İlanı Güncelle";
@@ -71,12 +71,12 @@
                             </div>
                         </div>
 
-                        @if (Model.AdvertImages != null && Model.AdvertImages.Any())
+                        @if (ViewBag.AdvertImages != null && ViewBag.AdvertImages.Count > 0)
                         {
                             <div class="mt-4">
                                 <label class="fw-bold">Mevcut Fotoğraflar</label>
                                 <div class="d-flex flex-wrap gap-2 mt-2">
-                                    @foreach (var img in Model.AdvertImages)
+                                    @foreach (var img in ViewBag.AdvertImages)
                                     {
                                         <div class="position-relative">
                                             <img src="@img.ImageUrl" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
@@ -107,8 +107,8 @@
     <script>
         $(document).ready(function () {
             var initialCityId = $('#citySelect').val();
-            var initialDistrictId = '@(Model?.DistrictId ?? 0)'; 
-            var advertId = parseInt('@(Model?.Id ?? 0)');
+            var initialDistrictId = '@Model.DistrictId'; 
+            var advertId = parseInt('@Model.Id');
 
             if (initialCityId > 0) {
                 loadDistricts(initialCityId, initialDistrictId);

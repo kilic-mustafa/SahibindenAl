@@ -61,7 +61,7 @@ public class AdvertController : Controller
     
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(AdvertCreateDto dto, Dictionary<int, string>? dynamicProps)
+    public async Task<IActionResult> Create(AdvertCreateDto dto, Dictionary<int, string>? PropertyValues)
     {
         if (!ModelState.IsValid)
         {
@@ -83,9 +83,9 @@ public class AdvertController : Controller
 
             dto.DynamicProperties = new List<AdvertPropertyInput>();
             
-            if (dynamicProps != null)
+            if (PropertyValues != null)
             {
-                foreach (var item in dynamicProps)
+                foreach (var item in PropertyValues)
                 {
                     dto.DynamicProperties.Add(new AdvertPropertyInput
                     {
@@ -128,22 +128,56 @@ public class AdvertController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null || advert.UserId != user.Id)
         {
-            return Forbid(); 
+            return Forbid();
         }
+
+        var dto = new AdvertUpdateDto
+        {
+            Id = advert.Id,
+            Title = advert.Title,
+            Description = advert.Description,
+            Price = advert.Price,
+            CategoryId = advert.CategoryId,
+            CityId = advert.CityId,
+            DistrictId = advert.DistrictId,
+            UserId = advert.UserId
+        };
+
+        ViewBag.AdvertImages = advert.AdvertImages;
 
         await PopulateDropdownsAsync();
 
-        return View(advert);
+        return View(dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(int id, Advert model, List<IFormFile> NewPhotos, Dictionary<int, string> PropertyValues)
+    public async Task<IActionResult> Update(int id, AdvertUpdateDto dto)
     {
-        try 
+        if (id != dto.Id)
         {
-            await _advertService.UpdateAdvertAsync(id, model, NewPhotos, PropertyValues);
-            
+            return BadRequest();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await PopulateDropdownsAsync();
+            var advert = await _advertService.GetAdvertByIdAsync(id);
+            if (advert != null)
+            {
+                dto.Title = advert.Title;
+                dto.Description = advert.Description;
+                dto.Price = advert.Price;
+                dto.CategoryId = advert.CategoryId;
+                dto.CityId = advert.CityId;
+                dto.DistrictId = advert.DistrictId;
+            }
+            return View(dto);
+        }
+
+        try
+        {
+            await _advertService.UpdateAdvertAsync(dto);
             TempData["SuccessMessage"] = "İlan başarıyla güncellendi.";
             return RedirectToAction(nameof(MyAdverts));
         }
@@ -151,7 +185,7 @@ public class AdvertController : Controller
         {
             ModelState.AddModelError("", "Güncelleme sırasında bir hata oluştu: " + ex.Message);
             await PopulateDropdownsAsync();
-            return View(model);
+            return View(dto);
         }
     }   
 
