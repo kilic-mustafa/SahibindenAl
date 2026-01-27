@@ -16,6 +16,8 @@ builder.Services.AddDbContext<SahibindenAl.Data.AppDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IAdvertService, AdvertService>();
 builder.Services.AddScoped<IAdvertRepository, AdvertRepository>();
+builder.Services.AddScoped<ISavedSearchService, SavedSearchService>();
+builder.Services.AddScoped<ISavedSearchRepository, SavedSearchRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
