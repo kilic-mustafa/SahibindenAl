@@ -160,21 +160,21 @@ public class AccountController : Controller
     public async Task<IActionResult> ToggleFavorite(int advertId)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user == null) 
+        if (user == null)
         {
             return Unauthorized(new { message = "Lütfen önce giriş yapın." });
         }
 
-        try 
+        try
         {
             var isAdded = await _advertService.ToggleFavoriteAsync(user.Id, advertId);
-            
-            return Ok(new { success = true, isAdded = isAdded }); 
+
+            return Ok(new { success = true, isAdded = isAdded });
         }
         catch (Exception ex)
         {
             return BadRequest(new { message = "İşlem sırasında bir hata oluştu.", detail = ex.Message });
         }
     }
-    
+       
 }

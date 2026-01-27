@@ -19,7 +19,8 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<AdvertPropertyValue> AdvertPropertyValues { get; set; }
     public DbSet<City> Cities { get; set; }
     public DbSet<District> Districts { get; set; }
-    public DbSet<Favorite> Favorites { get; set;}
+    public DbSet<Favorite> Favorites { get; set; }
+    public DbSet<SavedSearch> SavedSearches { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

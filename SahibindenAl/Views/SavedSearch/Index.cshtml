@@ -1,0 +1,97 @@
+@model IEnumerable<SahibindenAl.Models.SavedSearch>
+@using System.Text.Json
+@using SahibindenAl.DTOs
+
+@{
+    ViewData["Title"] = "Favori Aramalar";
+    Layout = "~/Views/Shared/_LayoutWithoutSearch.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_FavoriteSidebar" />
+        </div>
+
+        <div class="col-md-9">
+            <div class="mb-4">
+                <h3 class="text-center px-4 py-2 rounded shadow-sm" style="color: rgb(0, 0, 0); background-color:#F8F9FA;">Favori Aramalar</h3>
+                <hr />
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info shadow-sm">
+                    <i class="bi bi-info-circle me-2"></i> Henüz kaydedilmiş bir aramanız bulunmuyor.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive shadow-sm rounded">
+                    <table class="table table-hover align-middle bg-white mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Arama Adı</th>
+                                <th>Kayıt Tarihi</th>
+                                <th>Kriter Özeti</th>
+                                <th class="text-end">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                AdvertFilterDto? filter = null;
+                                if (!string.IsNullOrEmpty(item.Query))
+                                {
+                                    filter = JsonSerializer.Deserialize<AdvertFilterDto>(item.Query);
+                                }
+                                
+                                <tr>
+                                    <td>
+                                        <strong>@item.Name</strong>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted small">@item.CreatedDate.AddHours(3).ToString("dd MMMM yyyy HH:mm", new System.Globalization.CultureInfo("tr-TR"))</span>
+                                    </td>
+                                    <td>
+                                        @if (filter != null)
+                                        {
+                                            <small class="text-muted">
+                                                @(string.IsNullOrEmpty(filter.SearchText) ? "Genel Arama" : $"'{filter.SearchText}'") 
+                                                @if(filter.MinPrice.HasValue) { <span> | Min: @filter.MinPrice TL</span> }
+                                                @if(filter.MaxPrice.HasValue) { <span> | Max: @filter.MaxPrice TL</span> }
+                                            </small>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <a asp-controller="SavedSearch" 
+                                               asp-action="Execute" 
+                                               asp-route-id="@item.Id" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-search"></i> Ara
+                                            </a>
+
+                                            <form asp-controller="SavedSearch" asp-action="Delete" asp-route-id="@item.Id" 
+                                                  method="post" onsubmit="return confirm('Bu aramayı silmek istediğinize emin misiniz?');" 
+                                                  style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash">Sil</i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-responsive { background-color: #fff; border: 1px solid #dee2e6; }
+    .btn-group .btn { margin-left: 5px; border-radius: 5px !important; }
+</style>

@@ -1,20 +1,21 @@
 @model List<SahibindenAl.Models.Advert>
 
 @{
-    ViewData["Title"] = "Favorilerim";
+    ViewData["Title"] = "Favorileri İlanlar";
     Layout = "~/Views/Shared/_LayoutWithoutSearch.cshtml";
 }
 
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_FavoriteSidebar" />
+        </div>
+        <div class="col-md-9">
             <div class="mb-4">
-                <h3 class="text-center px-4 py-2 rounded shadow-sm" style="color: rgb(0, 0, 0); background-color:#DEE2E6;">Favorilerim</h3>
+                <h3 class="text-center px-4 py-2 rounded shadow-sm" style="color: rgb(0, 0, 0); background-color:#F8F9FA;">Favorileri İlanlar</h3>
+                <hr />
             </div>
-
         
-
             @if (Model == null || !Model.Any())
             {
                 <div class="alert alert-light text-center border shadow-sm">
@@ -44,20 +45,22 @@
                                         <p class="card-text text-primary fw-bold mb-1">
                                             @advert.Price.ToString("N0") ₺
                                         </p>
-                                        <p class="text-muted small mb-2">
+                                        <p class="text-muted small mb-3">
                                             <i class="bi bi-geo-alt"></i> @(advert.City?.Name ?? "Şehir Belirtilmemiş") / @(advert.District?.Name ?? "")
                                         </p>
+
+                                        <div class="d-flex flex-column gap-2">
+                                            <a asp-controller="Advert" asp-action="Details" asp-route-id="@advert.Id" 
+                                            class="btn btn-outline-primary btn-sm w-100">İlana Git</a>
+                                            
+                                            <button class="btn btn-outline-danger btn-sm w-100" onclick="removeFavorite(@advert.Id)" title="Favoriden Kaldır">
+                                                <i class="bi bi-trash">Favorimden Çıkar</i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
-                                    <a asp-controller="Advert" asp-action="Details" asp-route-id="@advert.Id" 
-                                       class="btn btn-outline-dark btn-sm flex-grow-1">İlana Git</a>
-                                    
-                                    <button class="btn btn-outline-danger btn-sm flex-grow-1" onclick="removeFavorite(@advert.Id)" title="Favoriden Kaldır">
-                                        <i class="bi bi-trash">Favorimden Çıkar</i>
-                                    </button>
-                                </div>
+
                             </div>
                         </div>
                     }
