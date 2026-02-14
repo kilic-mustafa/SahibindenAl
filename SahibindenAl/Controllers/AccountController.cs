@@ -143,7 +143,7 @@ public class AccountController : Controller
             return RedirectToAction("Index", "Home");
         }
         
-        ModelState.AddModelError(string.Empty, "Geçersiz giriş denemesi.");
+        ModelState.AddModelError(string.Empty, "Kullanıcı adı bulunamadı.");
         return View(dto);
     }
 

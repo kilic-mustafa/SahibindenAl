@@ -12,15 +12,16 @@ using SahibindenAl.Data;
 namespace SahibindenAl.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251208115320_AddCategoryParentOptions")]
-    partial class AddCategoryParentOptions
+    [Migration("20260211133011_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.11")
+                .HasAnnotation("Npgsql:CollationDefinition:tr_custom", "tr-TR,tr-TR,icu,")
+                .HasAnnotation("ProductVersion", "9.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -51,7 +52,7 @@ namespace SahibindenAl.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -75,7 +76,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -99,7 +100,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
@@ -120,7 +121,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("UserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
@@ -135,7 +136,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -154,7 +155,7 @@ namespace SahibindenAl.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.Advert", b =>
@@ -175,7 +176,8 @@ namespace SahibindenAl.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .UseCollation("tr_custom");
 
                     b.Property<int>("DistrictId")
                         .HasColumnType("integer");
@@ -190,7 +192,8 @@ namespace SahibindenAl.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .UseCollation("tr_custom");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -342,6 +345,37 @@ namespace SahibindenAl.Migrations
                     b.ToTable("CategoryPropertyKeys");
                 });
 
+            modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryPropertyKeyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryPropertyKeyId");
+
+                    b.ToTable("CategoryPropertyOptions");
+                });
+
             modelBuilder.Entity("SahibindenAl.Models.City", b =>
                 {
                     b.Property<int>("Id")
@@ -424,16 +458,13 @@ namespace SahibindenAl.Migrations
                     b.ToTable("Favorites");
                 });
 
-            modelBuilder.Entity("SahibindenAl.Models.CategoryParentOption", b =>
+            modelBuilder.Entity("SahibindenAl.Models.SavedSearch", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryPropertyKeyId")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
@@ -444,15 +475,20 @@ namespace SahibindenAl.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
+                    b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<string>("Query")
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryPropertyKeyId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("CategoryParentOptions");
+                    b.ToTable("SavedSearches");
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.User", b =>
@@ -469,6 +505,9 @@ namespace SahibindenAl.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -525,7 +564,7 @@ namespace SahibindenAl.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -665,6 +704,17 @@ namespace SahibindenAl.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyOption", b =>
+                {
+                    b.HasOne("SahibindenAl.Models.CategoryPropertyKey", "CategoryPropertyKey")
+                        .WithMany("CategoryPropertyOptions")
+                        .HasForeignKey("CategoryPropertyKeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CategoryPropertyKey");
+                });
+
             modelBuilder.Entity("SahibindenAl.Models.District", b =>
                 {
                     b.HasOne("SahibindenAl.Models.City", "City")
@@ -695,15 +745,15 @@ namespace SahibindenAl.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SahibindenAl.Models.CategoryParentOption", b =>
+            modelBuilder.Entity("SahibindenAl.Models.SavedSearch", b =>
                 {
-                    b.HasOne("SahibindenAl.Models.CategoryPropertyKey", "CategoryPropertyKey")
-                        .WithMany("CategoryParentOptions")
-                        .HasForeignKey("CategoryPropertyKeyId")
+                    b.HasOne("SahibindenAl.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CategoryPropertyKey");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.Advert", b =>
@@ -726,7 +776,7 @@ namespace SahibindenAl.Migrations
 
             modelBuilder.Entity("SahibindenAl.Models.CategoryPropertyKey", b =>
                 {
-                    b.Navigation("CategoryParentOptions");
+                    b.Navigation("CategoryPropertyOptions");
                 });
 
             modelBuilder.Entity("SahibindenAl.Models.City", b =>
