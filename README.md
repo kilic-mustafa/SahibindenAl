@@ -1,6 +1,6 @@
 # SahibindenAl 
 
-SahibindenAl is a web application that models the core functionalities of the popular second-hand classifieds platform, Sahibinden.com. It allows users to post listings in various categories (e.g., real estate, vehicles), search for listings with filters, and view their details. The project was developed using modern .NET technologies following the MVC (Model-View-Controller) architecture.
+SahibindenAl is a web application. It allows users to post listings in various categories (e.g., real estate, vehicles), search for listings with filters, and view their details. The project was developed using modern .NET technologies following the MVC (Model-View-Controller) architecture.
 
 ## Features
 
